@@ -1,7 +1,8 @@
-import { invoke } from '@tauri-apps/api/tauri'
-import { appWindow, LogicalPosition, LogicalSize } from '@tauri-apps/api/window'
+import { invoke } from '@tauri-apps/api/core'
+import { getCurrentWebviewWindow, LogicalPosition, LogicalSize } from '@tauri-apps/api/webviewWindow'
 import type { MotionSettings, MotionBoxPosition } from '@/types/settings'
 import type { WindowInfo } from '@/types/window'
+const appWindow = getCurrentWebviewWindow()
 
 const BOX_PADDING = 1
 

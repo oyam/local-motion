@@ -1,6 +1,9 @@
 use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use ndarray::{s, Array, ArrayBase, Axis, Dim, OwnedRepr};
-use ort::{inputs, Session, SessionOutputs};
+use ort::{
+    inputs,
+    session::{Session, SessionOutputs},
+};
 use std::path::Path;
 
 use crate::error;
@@ -15,7 +18,7 @@ pub struct DefaultDetector {
 
 impl DefaultDetector {
     pub fn with_model_from_file<P: AsRef<Path>>(path: P) -> ort::Result<Self> {
-        let model = Session::builder()?.with_model_from_file(path)?;
+        let model = Session::builder()?.commit_from_file(path)?;
         let default_detector = Self { model };
         Ok(default_detector)
     }
@@ -23,11 +26,11 @@ impl DefaultDetector {
     pub fn detect(
         &self,
         image: &ImageBuffer<Rgba<u8>, Vec<u8>>,
-        scale_facter: f32,
+        scale_factor: f32,
     ) -> Result<Vec<Vec<u64>>, error::Error> {
         let input = self.pre_processing(image);
         let outputs = self.run_model(input)?;
-        let boxes = self.post_processing(image, scale_facter, outputs)?;
+        let boxes = self.post_processing(image, scale_factor, outputs)?;
         Ok(boxes)
     }
 
@@ -49,26 +52,43 @@ impl DefaultDetector {
         input
     }
 
-    fn run_model(&self, input: ArrayBase<OwnedRepr<f32>, Dim<[usize; 4]>>) -> ort::Result<SessionOutputs> {
-        let outputs = self.model.run(inputs!["images" => input.view()]?)?;
+    fn run_model(
+        &self,
+        input: ArrayBase<OwnedRepr<f32>, Dim<[usize; 4]>>,
+    ) -> ort::Result<SessionOutputs> {
+        let input_dyn = input.into_dyn();
+        let shape = input_dyn.shape().to_vec();
+        let flat_data: Vec<f32> = input_dyn.iter().cloned().collect();
+
+        let inputs = inputs! {
+            "images" => (shape, flat_data)
+        }?;
+
+        // // inputs マクロを使用
+        // let inputs = inputs! {
+        //     "images" => tensor
+        // }?;
+
+        let outputs = self.model.run(inputs)?;
+        // let outputs = self.model.run(inputs!["images" => input.into_dyn()]?)?;
         Ok(outputs)
     }
 
     fn post_processing(
         &self,
         image: &ImageBuffer<Rgba<u8>, Vec<u8>>,
-        scale_facter: f32,
+        scale_factor: f32,
         outputs: SessionOutputs,
     ) -> Result<Vec<Vec<u64>>, error::Error> {
+        let (img_width, img_height) = (image.width(), image.height());
         let output = outputs["output0"]
-            .extract_tensor::<f32>()?
-            .view()
+            .try_extract_tensor::<f32>()?
             .t()
             .into_owned();
 
-        let (img_width, img_height) = (image.width(), image.height());
         let mut boxes = Vec::new();
         let output = output.slice(s![.., .., 0]);
+
         for row in output.axis_iter(Axis(0)) {
             let row: Vec<_> = row.iter().copied().collect();
             let (class_id, prob) = row
@@ -78,15 +98,15 @@ impl DefaultDetector {
                 .enumerate()
                 .map(|(index, value)| (index, *value))
                 .reduce(|accum, row| if row.1 > accum.1 { row } else { accum })
-                .ok_or(error::Error::InvalidOrtOutputFormat)?;
-            if prob < 0.3 {
+                .unwrap();
+            if prob < 0.5 {
                 continue;
             }
             let label = YOLOV8_CLASS_LABELS[class_id];
-            let xc = row[0] / 512. * (img_width as f32 / scale_facter);
-            let yc = row[1] / 512. * (img_height as f32 / scale_facter);
-            let w = row[2] / 512. * (img_width as f32 / scale_facter);
-            let h = row[3] / 512. * (img_height as f32 / scale_facter);
+            let xc = row[0] / 512. * (img_width as f32 / scale_factor);
+            let yc = row[1] / 512. * (img_height as f32 / scale_factor);
+            let w = row[2] / 512. * (img_width as f32 / scale_factor);
+            let h = row[3] / 512. * (img_height as f32 / scale_factor);
             boxes.push((
                 image_utils::BoundingBox {
                     x1: xc - w / 2.,
@@ -114,7 +134,9 @@ impl DefaultDetector {
             boxes = boxes
                 .iter()
                 .filter(|box1| {
-                    image_utils::intersection(&boxes[0].0, &box1.0) / image_utils::union(&boxes[0].0, &box1.0) < 0.7
+                    image_utils::intersection(&boxes[0].0, &box1.0)
+                        / image_utils::union(&boxes[0].0, &box1.0)
+                        < 0.7
                 })
                 .copied()
                 .collect();

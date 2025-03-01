@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { appWindow, LogicalSize } from '@tauri-apps/api/window'
-import { invoke } from '@tauri-apps/api/tauri'
+import { getCurrentWebviewWindow, LogicalSize } from '@tauri-apps/api/webviewWindow'
+import { invoke } from '@tauri-apps/api/core'
 import { error } from 'tauri-plugin-log-api'
 import { useMotionSettings } from '@/providers/motion-settings-provider'
 import type { MotionSettings, PostAction } from '@/types/settings'
@@ -8,12 +8,13 @@ import {
   isRegistered,
   unregister,
   register
-} from '@tauri-apps/api/globalShortcut'
+} from '@tauri-apps/plugin-global-shortcut'
 import { generateShortcuts } from '@/components/features/main/utils/shortcut-utils'
 import {
   getLocalWindowInfo,
   calcTargetPos
 } from '@/components/features/main/utils/window-utils'
+const appWindow = getCurrentWebviewWindow()
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
 

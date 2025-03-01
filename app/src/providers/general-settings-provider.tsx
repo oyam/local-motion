@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
-import { appWindow } from '@tauri-apps/api/window'
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 import type { GeneralSettings } from '@/types/settings'
 import { DEFAULT_GENERAL_SETTINGS } from '@/constants'
-import { enable, isEnabled, disable } from 'tauri-plugin-autostart-api'
+import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart'
 import { readGeneralSettings, writeGeneralSettings } from '@/utils/fs'
+const appWindow = getCurrentWebviewWindow()
 
 interface SettingsProviderProps {
   children: React.ReactNode

@@ -15,7 +15,9 @@ pub struct CustomDetector {
 
 impl CustomDetector {
     pub fn new() -> Self {
-        Self { client: Client::new() }
+        Self {
+            client: Client::new(),
+        }
     }
 
     pub async fn detect(
@@ -71,7 +73,9 @@ impl CustomDetector {
     ) -> Result<Vec<Vec<f64>>, error::Error> {
         let (img_width, img_height) = (image.width(), image.height());
         let boxes_key = String::from("boxes");
-        let box_values = response.get(&boxes_key).ok_or(error::Error::BoxesFieldNotFound)?;
+        let box_values = response
+            .get(&boxes_key)
+            .ok_or(error::Error::BoxesFieldNotFound)?;
         let mut converted_boxes: Vec<Vec<f64>> = Vec::new();
         if let Some(boxes) = box_values.as_array() {
             for bbox in boxes {
@@ -102,5 +106,4 @@ impl CustomDetector {
         }
         Ok(converted_boxes)
     }
-
 }

@@ -1,12 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { listen } from '@tauri-apps/api/event'
-import { appWindow } from '@tauri-apps/api/window'
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 import type { MotionSettings } from '@/types/settings'
 import { getNewMotionName } from '@/components/features/settings-motions/utils/motion-utils'
 import { getDefaultMotionSettings } from '@/utils/settings'
-import { isRegistered, unregister } from '@tauri-apps/api/globalShortcut'
+import { isRegistered, unregister } from '@tauri-apps/plugin-global-shortcut'
 import { readMotionSettingsList, writeMotionSettingsList } from '@/utils/fs'
+const appWindow = getCurrentWebviewWindow()
 
 interface SettingsProviderProps {
   children: React.ReactNode

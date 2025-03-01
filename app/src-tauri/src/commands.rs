@@ -6,9 +6,8 @@ use screenshots::Screen;
 
 use crate::detectors::custom_detector::CustomDetector;
 use crate::detectors::default_detector::DefaultDetector;
-use crate::utils::image_utils;
 use crate::error;
-
+use crate::utils::image_utils;
 
 #[tauri::command]
 pub fn get_mouse_position() -> Result<(i32, i32, u32, u32), error::Error> {
@@ -43,9 +42,7 @@ pub async fn run_custom_detector(
     scale_factor: f32,
 ) -> Result<Vec<Vec<f64>>, error::Error> {
     let image = image_utils::capture_area(center_x, center_y, width, height)?;
-    let bboxes = custom_detector
-        .detect(url, &image, scale_factor)
-        .await?;
+    let bboxes = custom_detector.detect(url, &image, scale_factor).await?;
     Ok(bboxes)
 }
 

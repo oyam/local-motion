@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { LucideIcon } from 'lucide-react'
-import { Platform, platform } from '@tauri-apps/api/os'
+import { Platform, platform } from '@tauri-apps/plugin-os'
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import {

@@ -2,86 +2,52 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:5174",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5174"
   },
-  "package": {
-    "productName": "local-motion",
-    "version": "../package.json"
-  },
-  "tauri": {
-    "macOSPrivateApi": true,
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "open": true
-      },
-      "window": {
-        "all": true
-      },
-      "globalShortcut": {
-        "all": true
-      },
-      "fs": {
-        "readFile": true,
-        "writeFile": true,
-        "readDir": true,
-        "copyFile": true,
-        "createDir": true,
-        "renameFile": true,
-        "exists": true,
-        "scope": ["$HOME/.local-motion/*"]
-      },
-      "path": {
-        "all": true
-      },
-      "os": {
-        "all": true
-      }
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
     },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+    "resources": [
+      "models/*.onnx"
+    ],
+    "shortDescription": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "local-motion",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [
-        "models/*.onnx"
-      ],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
-    },
-    "security": {
-      "csp": null
-    },
+    }
+  },
+  "productName": "local-motion",
+  "mainBinaryName": "local-motion",
+  "version": "../package.json",
+  "identifier": "local-motion",
+  "plugins": {},
+  "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "label": "main",
@@ -93,7 +59,8 @@
         "height": 0,
         "transparent": true,
         "decorations": false,
-        "focus": false
+        "focus": false,
+        "useHttpsScheme": true
       },
       {
         "label": "settings",
@@ -104,8 +71,13 @@
         "width": 1200,
         "height": 800,
         "focus": false,
-        "acceptFirstMouse": true
+        "acceptFirstMouse": true,
+        "useHttpsScheme": true
       }
-    ]
+    ],
+    "withGlobalTauri": false,
+    "security": {
+      "csp": null
+    }
   }
 }

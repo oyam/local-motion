@@ -3,7 +3,7 @@ import {
   BaseDirectory,
   readTextFile,
   writeTextFile
-} from '@tauri-apps/api/fs'
+} from '@tauri-apps/plugin-fs'
 import type {
   Settings,
   GeneralSettings,

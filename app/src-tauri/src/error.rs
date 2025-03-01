@@ -26,9 +26,6 @@ pub enum Error {
 
     #[error("boxes field not found in response")]
     BoxesFieldNotFound,
-
-    #[error("output format of the ort model is invalid")]
-    InvalidOrtOutputFormat,
 }
 
 impl serde::Serialize for Error {

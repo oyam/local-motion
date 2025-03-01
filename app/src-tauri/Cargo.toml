@@ -10,12 +10,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.5.4", features = [ "os-all", "path-all", "fs-read-file", "fs-copy-file", "fs-read-dir", "fs-write-file", "fs-rename-file", "fs-create-dir", "fs-exists", "system-tray", "global-shortcut-all", "macos-private-api", "shell-open", "window-all"] }
-tauri-plugin-autostart = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri = { version = "2", features = ["macos-private-api", "tray-icon"] }
+tauri-plugin-autostart = { version = "2" }
+tauri-plugin-log = { version = "2" }
 anyhow = "1.0"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
@@ -28,17 +28,27 @@ reqwest = { version = "0.11", features = ["json"] }
 screenshots = "0.8.7"
 serde_json = "1.0.107"
 tokio = { version = "1", features = ["full"] }
-ort = "2.0.0-alpha.2"
-ndarray = "0.15"
-tracing-subscriber = { version = "0.3", default-features = false, features = [ "env-filter", "fmt" ] }
-show-image = { version = "0.13", features = [ "image", "raqote" ] }
+ort = "=2.0.0-rc.9"
+ndarray = "=0.16"
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+    "env-filter",
+    "fmt",
+] }
+show-image = { version = "0.13", features = ["image", "raqote"] }
 raqote = { version = "0.8", default-features = false }
 ureq = "2.1"
 tracing = "0.1"
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 thiserror = "1.0"
+tauri-plugin-shell = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-os = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-autostart = "2"
+tauri-plugin-global-shortcut = "2"

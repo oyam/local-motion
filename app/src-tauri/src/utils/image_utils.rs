@@ -52,7 +52,6 @@ pub fn capture_area(
     let half_height = height / 2;
     let x_min = relative_x - i32::from(half_width);
     let y_min = relative_y - i32::from(half_height);
-    let image = screen
-        .capture_area(x_min, y_min, u32::from(width), u32::from(height))?;
+    let image = screen.capture_area(x_min, y_min, u32::from(width), u32::from(height))?;
     Ok(image)
 }
